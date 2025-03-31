@@ -26,7 +26,7 @@ vulnerability = Vulnerability(
 )
 print(vulnerability.to_json())
 
-statement = Document.from_json(
+document = Document.from_json(
     """
     {
         "@context": "https://openvex.dev/ns/v0.2.0",
