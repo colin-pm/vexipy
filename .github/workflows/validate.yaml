@@ -1,0 +1,56 @@
+name: Validate
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
+
+    - name: Install all dependencies
+      run: |
+        uv sync --all-packages
+
+    - name: Check formatting with ruff format
+      run: |
+        uv run ruff format --target-version py310 --check py_vex tests
+
+    - name: Lint with ruff check
+      run: |
+        uv run ruff check --show-fixes
+
+    - name: Check import sorting with isort
+      run: |
+        uv run isort --check-only py_vex tests
+
+    - name: Type check with mypy
+      run: |
+        uv run mypy py_vex
+
+    - name: Test with pytest
+      run: |
+        uv run pytest
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      if: matrix.python-version == '3.11'
+      with:
+        files: ./htmlcov/index.html
+        fail_ci_if_error: false
