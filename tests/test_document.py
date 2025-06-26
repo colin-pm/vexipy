@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import given, HealthCheck, settings
+from hypothesis import HealthCheck, given, settings
 from hypothesis_jsonschema import from_schema
 
 from py_vex import Document

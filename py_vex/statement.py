@@ -1,12 +1,12 @@
 import warnings
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from py_vex.vulnerability import Vulnerability
-from py_vex.component import Component
-from py_vex.status import StatusLabel, StatusJustification
 from py_vex._iri import Iri
+from py_vex.component import Component
+from py_vex.status import StatusJustification, StatusLabel
+from py_vex.vulnerability import Vulnerability
 
 
 class Statement(BaseModel):
@@ -34,28 +34,28 @@ class Statement(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @model_validator(mode="after")
-    def check_review_fields(self):
+    def check_review_fields(self) -> "Statement":
         if self.status == StatusLabel.NOT_AFFECTED:
             # Note: truthiness should just be checked here, but upstream schema allows empty strings
-            if self.justification == None and self.impact_statement == None:
+            if self.justification is None and self.impact_statement is None:
                 raise ValueError(
                     "A not-affected status must include a justification or impact statement"
                 )
-            if self.impact_statement != None and self.justification == None:
+            if self.impact_statement is not None and self.justification is None:
                 warnings.warn(
                     "The use of an impact statement in textual form without a justification field is highly discouraged as it breaks VEX automation and interoperability."
                 )
         return self
 
     @model_validator(mode="after")
-    def check_action_statement(self):
-        if self.status == StatusLabel.AFFECTED and self.action_statement == None:
+    def check_action_statement(self) -> "Statement":
+        if self.status == StatusLabel.AFFECTED and self.action_statement is None:
             raise ValueError(
                 'For a statement with "affected" status, a VEX statement MUST include an action statement that SHOULD describe actions to remediate or mitigate the vulnerability.'
             )
-        return
+        return self
 
-    def to_json(self, **kwargs) -> str:
+    def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
         return self.model_dump_json(**kwargs)
 

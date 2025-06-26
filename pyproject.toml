@@ -20,7 +20,42 @@ build-backend = "hatchling.build"
 dev = [
     "hypothesis>=6.130.5",
     "hypothesis-jsonschema>=0.23.1",
+    "isort>=6.0.1",
     "jsonschema>=4.23.0",
+    "mypy>=1.16.1",
     "pytest>=8.3.5",
+    "pytest-cov>=6.2.1",
     "requests>=2.32.3",
+    "ruff>=0.12.0",
+]
+
+[tool.isort]
+known_local_folder="conftest"
+profile = "black"
+multi_line_output = 3
+line_length = 88
+sections="FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
 ]

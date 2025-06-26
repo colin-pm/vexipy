@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -47,6 +47,7 @@ class Subcomponent(BaseModel):
             raise ValueError(
                 f'"{", ".join(value.keys() - IDENTIFIER_KEYS)}" are not valid identifiers'
             )
+        return value
 
     @field_validator("hashes", mode="after")
     @classmethod
@@ -55,8 +56,9 @@ class Subcomponent(BaseModel):
             raise ValueError(
                 f'"{", ".join(value.keys() - HASH_KEYS)}" are not valid hashes'
             )
+        return value
 
-    def to_json(self, **kwargs) -> str:
+    def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
         return self.model_dump_json(**kwargs)
 
