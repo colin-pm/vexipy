@@ -1,7 +1,6 @@
 import pytest
 import requests
 
-
 UPSTREAM_SCHEMA_REFS = {
     # There's no release with the SCHEMA doc yet
     # TODO Only map to OpenVEX release tags

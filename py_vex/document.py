@@ -1,9 +1,9 @@
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from py_vex.statement import Statement
 from py_vex._iri import Iri
+from py_vex.statement import Statement
 
 
 class Document(BaseModel):
@@ -23,7 +23,7 @@ class Document(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
-    def to_json(self, **kwargs) -> str:
+    def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
         return self.model_dump_json(**kwargs)
 

@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from pydantic.functional_validators import AfterValidator
-from rfc3987 import match
+from rfc3987 import match  # type: ignore
 
 
 def check_iri(iri: str) -> str:
