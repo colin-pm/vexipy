@@ -58,7 +58,7 @@ document = Document.from_json(
 - `[ ]` Implement [data inheritance](https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#data-inheritance)
 - `[X]` Add testing against OpenVEX spec's schema
 - `[ ]` Add additional tests
-- `[ ]` Add CI to run tests
+- `[X]` Add CI to run tests
 - `[ ]` Add CI to build and publish package
 - `[ ]` Optional: Add CLI tool
 
