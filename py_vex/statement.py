@@ -1,17 +1,21 @@
 import warnings
+from contextlib import contextmanager
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, Any, Iterator, List, Optional
 
 from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
     PrivateAttr,
+    ValidationInfo,
     field_serializer,
     model_validator,
 )
+from typing_extensions import Self
 
 from py_vex._iri import Iri
+from py_vex._util import utc_now
 from py_vex.component import Component
 from py_vex.status import StatusJustification, StatusLabel
 from py_vex.vulnerability import Vulnerability
@@ -43,6 +47,7 @@ class Statement(BaseModel):
     action_statement_timestamp: Optional[str] = None
 
     _document: Optional["Document"] = PrivateAttr(default=None)
+    _auto_timestamp_last_updated: bool = PrivateAttr(default=True)
 
     model_config = ConfigDict(populate_by_name=True, validate_assignment=True)
 
@@ -68,9 +73,29 @@ class Statement(BaseModel):
             )
         return self
 
+    @model_validator(mode="after")
+    def update_last_updated_timestamp(self, info: ValidationInfo) -> Self:
+        """Updates the last_updated field if data is modified"""
+        # Auto-update disabled for this statement
+        if not self._auto_timestamp_last_updated:
+            return self
+        # Ensure the object is getting assigned and is not getting instantiated
+        if info.context and info.context.get("assignment_mode"):
+            self.last_updated = utc_now()
+        return self
+
     @field_serializer("timestamp", "last_updated")
     def serialize_timestamp(self, value: datetime) -> str:
         return value.isoformat()
+
+    @contextmanager
+    def disable_last_updated(self) -> Iterator[Self]:
+        """Disable updating the last_updated field when modifying data"""
+        self._auto_timestamp_last_updated = False
+        try:
+            yield self
+        finally:
+            self._auto_timestamp_last_updated = True
 
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
