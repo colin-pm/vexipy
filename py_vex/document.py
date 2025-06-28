@@ -1,8 +1,10 @@
+from datetime import datetime
 from typing import Any, Iterable, Optional, Tuple
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 from py_vex._iri import Iri
+from py_vex._util import utc_now
 from py_vex.statement import Statement
 
 
@@ -15,7 +17,7 @@ class Document(BaseModel):
     id: Iri = Field(alias="@id")
     author: str
     role: Optional[str] = None
-    timestamp: str
+    timestamp: datetime = Field(default_factory=utc_now)
     version: int
     tooling: Optional[str] = None
     statements: Tuple[Statement, ...] = Field(default=tuple())
@@ -27,6 +29,11 @@ class Document(BaseModel):
     def convert_to_tuple(cls, v: Iterable[Statement]) -> Tuple[Statement, ...]:
         """Convert dict input to tuple of tuples"""
         return None if v is None else tuple(v)
+
+    @field_serializer("timestamp")
+    def serialize_timestamp(self, value: datetime) -> str:
+        """Serializes timestamp parameter as a ISO 8601 string"""
+        return value.isoformat()
 
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""

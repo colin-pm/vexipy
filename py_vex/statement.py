@@ -1,9 +1,18 @@
 import warnings
+from datetime import datetime
 from typing import Any, Iterable, Optional, Tuple
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_serializer,
+    field_validator,
+    model_validator,
+)
 
 from py_vex._iri import Iri
+from py_vex._util import utc_now
 from py_vex.component import Component
 from py_vex.status import StatusJustification, StatusLabel
 from py_vex.vulnerability import Vulnerability
@@ -20,7 +29,7 @@ class Statement(BaseModel):
     id: Optional[Iri] = Field(alias="@id", default=None)
     version: Optional[int] = None
     vulnerability: Vulnerability
-    timestamp: Optional[str] = None
+    timestamp: datetime = Field(default_factory=utc_now)
     products: Optional[Tuple[Component, ...]] = None
     status: StatusLabel
     supplier: Optional[str] = None
@@ -28,7 +37,7 @@ class Statement(BaseModel):
     justification: Optional[StatusJustification] = None
     impact_statement: Optional[str] = None
     action_statement: Optional[str] = None
-    action_statement_timestamp: Optional[str] = None
+    action_statement_timestamp: Optional[datetime] = None
 
     model_config = ConfigDict(frozen=True, populate_by_name=True)
 
@@ -61,6 +70,10 @@ class Statement(BaseModel):
                 'For a statement with "affected" status, a VEX statement MUST include an action statement that SHOULD describe actions to remediate or mitigate the vulnerability.'
             )
         return self
+
+    @field_serializer("timestamp")
+    def serialize_timestamp(self, value: datetime) -> str:
+        return value.isoformat()
 
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
