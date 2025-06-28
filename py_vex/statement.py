@@ -1,12 +1,15 @@
 import warnings
-from typing import Any, List, Optional
+from typing import TYPE_CHECKING, Any, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, model_validator
 
 from py_vex._iri import Iri
 from py_vex.component import Component
 from py_vex.status import StatusJustification, StatusLabel
 from py_vex.vulnerability import Vulnerability
+
+if TYPE_CHECKING:
+    from py_vex.document import Document
 
 
 class Statement(BaseModel):
@@ -31,7 +34,9 @@ class Statement(BaseModel):
     action_statement: Optional[str] = None
     action_statement_timestamp: Optional[str] = None
 
-    model_config = ConfigDict(populate_by_name=True)
+    _document: Optional["Document"] = PrivateAttr(default=None)
+
+    model_config = ConfigDict(populate_by_name=True, validate_assignment=True)
 
     @model_validator(mode="after")
     def check_review_fields(self) -> "Statement":

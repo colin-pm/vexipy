@@ -1,6 +1,7 @@
 from typing import Any, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+from typing_extensions import Self
 
 from py_vex._iri import Iri
 from py_vex.statement import Statement
@@ -21,7 +22,14 @@ class Document(BaseModel):
     tooling: Optional[str] = None
     statements: List[Statement] = []
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, validate_assignment=True)
+
+    @model_validator(mode="after")
+    def update_statement_backreferences(self) -> Self:
+        """Ensures each statement object references this document"""
+        for statement in self.statements:
+            statement._document = self
+        return self
 
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
