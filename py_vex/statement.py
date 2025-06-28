@@ -74,7 +74,7 @@ class Statement(BaseModel):
 
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
-        return self.model_dump_json(**kwargs)
+        return self.model_dump_json(exclude_none=True, **kwargs)
 
     @classmethod
     def from_json(cls, json_string: str) -> "Statement":
