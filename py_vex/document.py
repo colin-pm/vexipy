@@ -1,9 +1,11 @@
+from datetime import datetime
 from typing import Any, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, model_validator
 from typing_extensions import Self
 
 from py_vex._iri import Iri
+from py_vex._util import utc_now
 from py_vex.statement import Statement
 
 
@@ -16,8 +18,8 @@ class Document(BaseModel):
     id: Iri = Field(alias="@id")
     author: str
     role: Optional[str] = None
-    timestamp: str
-    last_updated: Optional[str] = None
+    timestamp: datetime = Field(default_factory=utc_now)
+    last_updated: Optional[datetime] = None
     version: int
     tooling: Optional[str] = None
     statements: List[Statement] = []
@@ -30,6 +32,10 @@ class Document(BaseModel):
         for statement in self.statements:
             statement._document = self
         return self
+
+    @field_serializer("timestamp", "last_updated")
+    def serialize_timestamp(self, value: datetime) -> str:
+        return value.isoformat()
 
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
