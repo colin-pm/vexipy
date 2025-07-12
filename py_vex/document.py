@@ -1,6 +1,6 @@
-from typing import Any, List, Optional
+from typing import Any, Iterable, Optional, Tuple
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from py_vex._iri import Iri
 from py_vex.statement import Statement
@@ -16,12 +16,17 @@ class Document(BaseModel):
     author: str
     role: Optional[str] = None
     timestamp: str
-    last_updated: Optional[str] = None
     version: int
     tooling: Optional[str] = None
-    statements: List[Statement] = []
+    statements: Tuple[Statement, ...] = Field(default=tuple())
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(frozen=True, populate_by_name=True)
+
+    @field_validator("statements", mode="before")
+    @classmethod
+    def convert_to_tuple(cls, v: Iterable[Statement]) -> Tuple[Statement, ...]:
+        """Convert dict input to tuple of tuples"""
+        return None if v is None else tuple(v)
 
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""

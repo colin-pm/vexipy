@@ -1,7 +1,7 @@
 import warnings
-from typing import Any, List, Optional
+from typing import Any, Iterable, Optional, Tuple
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from py_vex._iri import Iri
 from py_vex.component import Component
@@ -21,8 +21,7 @@ class Statement(BaseModel):
     version: Optional[int] = None
     vulnerability: Vulnerability
     timestamp: Optional[str] = None
-    last_updated: Optional[str] = None
-    products: Optional[List[Component]] = None
+    products: Optional[Tuple[Component, ...]] = None
     status: StatusLabel
     supplier: Optional[str] = None
     status_notes: Optional[str] = None
@@ -31,7 +30,15 @@ class Statement(BaseModel):
     action_statement: Optional[str] = None
     action_statement_timestamp: Optional[str] = None
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(frozen=True, populate_by_name=True)
+
+    @field_validator("products", mode="before")
+    @classmethod
+    def convert_to_tuple(
+        cls, v: Optional[Iterable[Component]]
+    ) -> Optional[Tuple[Component, ...]]:
+        """Convert dict input to tuple of tuples"""
+        return None if v is None else tuple(v)
 
     @model_validator(mode="after")
     def check_review_fields(self) -> "Statement":
