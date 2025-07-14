@@ -1,6 +1,12 @@
-from typing import Any, Dict, List, Optional
+from types import MappingProxyType
+from typing import Any, Dict, Iterable, Mapping, Optional, Tuple
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+)
 
 from py_vex._iri import Iri
 
@@ -35,14 +41,25 @@ class Subcomponent(BaseModel):
     """
 
     id: Optional[Iri] = Field(alias="@id", default=None)
-    identifiers: Optional[Dict[str, str]] = None
-    hashes: Optional[Dict[str, str]] = None
+    identifiers: Optional[Dict[str, str]] = Field(default=None)
+    hashes: Optional[Dict[str, str]] = Field(default=None)
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(frozen=True, populate_by_name=True)
+
+    @field_validator("identifiers", "hashes", mode="before")
+    @classmethod
+    def make_data_readonly(
+        cls, v: Optional[Mapping[str, str]]
+    ) -> Optional[MappingProxyType[str, str]]:
+        if v is None:
+            return None
+        return MappingProxyType(v)
 
     @field_validator("identifiers", mode="after")
     @classmethod
-    def identifiers_valid(cls, value: Dict[str, str]) -> Dict[str, str]:
+    def identifiers_valid(
+        cls, value: MappingProxyType[str, str]
+    ) -> MappingProxyType[str, str]:
         if not IDENTIFIER_KEYS.issuperset(value.keys()):
             raise ValueError(
                 f'"{", ".join(value.keys() - IDENTIFIER_KEYS)}" are not valid identifiers'
@@ -51,7 +68,9 @@ class Subcomponent(BaseModel):
 
     @field_validator("hashes", mode="after")
     @classmethod
-    def hashes_valid(cls, value: Dict[str, str]) -> Dict[str, str]:
+    def hashes_valid(
+        cls, value: MappingProxyType[str, str]
+    ) -> MappingProxyType[str, str]:
         if not HASH_KEYS.issuperset(value.keys()):
             raise ValueError(
                 f'"{", ".join(value.keys() - HASH_KEYS)}" are not valid hashes'
@@ -76,7 +95,15 @@ class Component(Subcomponent):
     one or more of the product's dependencies.
     """
 
-    subcomponents: Optional[List["Subcomponent"]] = None
+    subcomponents: Optional[Tuple["Subcomponent", ...]] = Field(default=None)
+
+    @field_validator("subcomponents", mode="before")
+    @classmethod
+    def convert_to_tuple(
+        cls, v: Optional[Iterable["Subcomponent"]]
+    ) -> Optional[Tuple["Subcomponent", ...]]:
+        """Convert dict input to tuple of tuples"""
+        return None if v is None else tuple(v)
 
     @classmethod
     def from_json(cls, json_string: str) -> "Component":
