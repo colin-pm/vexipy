@@ -42,7 +42,7 @@ def test_statement_creation_with_time_passed(time_input):
 
 
 @freeze_time("2025-01-14")
-def test_document_update_with_timestamp():
+def test_statement_update_with_timestamp():
     s = create_minimal_statement()
     s = s.update(status="fixed", timestamp="2026-01-14")
     assert s.status == StatusLabel.FIXED
@@ -50,7 +50,7 @@ def test_document_update_with_timestamp():
 
 
 @freeze_time("2026-01-14")
-def test_document_update_without_timestamp():
+def test_statement_update_without_timestamp():
     s = create_minimal_statement("2025-01-14")
     s = s.update(status="fixed")
     assert s.status == StatusLabel.FIXED

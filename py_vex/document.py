@@ -1,7 +1,14 @@
 from datetime import datetime
 from typing import Any, Iterable, Optional, Tuple
 
-from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_serializer,
+    field_validator,
+    model_validator,
+)
 
 from py_vex._iri import Iri
 from py_vex._util import utc_now
@@ -29,6 +36,30 @@ class Document(BaseModel):
     def convert_to_tuple(cls, v: Iterable[Statement]) -> Tuple[Statement, ...]:
         """Convert dict input to tuple of tuples"""
         return None if v is None else tuple(v)
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_timestamps(cls, data: dict[str, Any]) -> dict[str, Any]:
+        """Removes any timestamps from statements that match the document's timestamp"""
+        statements = []
+        for statement in data.get("statements", []):
+            if isinstance(statement, dict) and "timestamp" in statement:
+                if (
+                    statement["timestamp"]
+                    and "timestamp" in data
+                    and statement["timestamp"] == data["timestamp"]
+                ):
+                    statement["timestamp"] = None
+            elif isinstance(statement, Statement):
+                if (
+                    statement.timestamp
+                    and "timestamp" in data
+                    and statement.timestamp == data["timestamp"]
+                ):
+                    statement = statement.update(timestamp=None)
+            statements.append(statement)
+        data["statements"] = statements
+        return data
 
     @field_serializer("timestamp")
     def serialize_timestamp(self, value: datetime) -> str:

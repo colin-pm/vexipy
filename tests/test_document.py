@@ -42,22 +42,25 @@ def test_document_creation_default_timestamp():
     assert d.timestamp == datetime(year=2025, month=1, day=14, tzinfo=timezone.utc)
 
 
-def create_minimal_document(time_input=None) -> Document:
-    obj = {
+def create_minimal_document(
+    statement_timestamp=None, document_timestamp=None
+) -> Document:
+    statement = {
+        "vulnerability": Vulnerability(name="CVE-2014-123456"),
+        "status": "fixed",
+    }
+    if statement_timestamp:
+        statement["timestamp"] = statement_timestamp
+    document = {
         "context": "https://openvex.dev/ns/v0.2.0",
         "id": "https://openvex.dev/docs/example/vex-9fb3463de1b57",
         "author": "Wolfi J Inkinson",
         "version": "1",
-        "statements": [
-            Statement(
-                vulnerability=Vulnerability(name="CVE-2014-123456"),
-                status="fixed",
-            )
-        ],
+        "statements": [Statement(**statement)],
     }
-    if time_input:
-        obj["timestamp"] = time_input
-    return Document(**obj)
+    if document_timestamp:
+        document["timestamp"] = document_timestamp
+    return Document(**document)
 
 
 reference_time = datetime(
@@ -72,7 +75,7 @@ testdata = [
 
 @pytest.mark.parametrize("time_input", testdata)
 def test_document_creation_with_time_passed(time_input):
-    d = create_minimal_document(time_input)
+    d = create_minimal_document(document_timestamp=time_input)
     assert d.timestamp == reference_time
 
 
@@ -90,3 +93,18 @@ def test_document_update_without_timestamp():
     d = d.update(author="Colin")
     assert d.author == "Colin"
     assert d.timestamp == datetime.now(timezone.utc)
+
+
+@freeze_time("2026-01-14")
+def test_document_update_with_statement_timestamps():
+    d = create_minimal_document("2025-01-14", "2025-01-14")
+    d = d.append_statements(
+        Statement(vulnerability=Vulnerability(name="CVE-2015-123456"), status="fixed")
+    )
+    assert d.timestamp.replace(tzinfo=None) == parse("2026-01-14")
+    assert len(d.statements) == 2
+    for statement in d.statements:
+        if statement.vulnerability.name == "CVE-2014-123456":
+            assert statement.timestamp == parse("2025-01-14")
+        if statement.vulnerability.name == "CVE-2015-123456":
+            assert statement.timestamp is None

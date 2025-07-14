@@ -29,7 +29,7 @@ class Statement(BaseModel):
     id: Optional[Iri] = Field(alias="@id", default=None)
     version: Optional[int] = None
     vulnerability: Vulnerability
-    timestamp: datetime = Field(default_factory=utc_now)
+    timestamp: Optional[datetime] = Field(default_factory=utc_now)
     products: Optional[Tuple[Component, ...]] = None
     status: StatusLabel
     supplier: Optional[str] = None
