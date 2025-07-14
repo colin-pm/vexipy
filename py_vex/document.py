@@ -1,7 +1,14 @@
 from datetime import datetime
 from typing import Any, Iterable, Optional, Tuple
 
-from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_serializer,
+    field_validator,
+    model_validator,
+)
 
 from py_vex._iri import Iri
 from py_vex._util import utc_now
@@ -30,10 +37,55 @@ class Document(BaseModel):
         """Convert dict input to tuple of tuples"""
         return None if v is None else tuple(v)
 
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_timestamps(cls, data: dict[str, Any]) -> dict[str, Any]:
+        """Removes any timestamps from statements that match the document's timestamp"""
+        statements = []
+        for statement in data.get("statements", []):
+            if isinstance(statement, dict) and "timestamp" in statement:
+                if (
+                    statement["timestamp"]
+                    and "timestamp" in data
+                    and statement["timestamp"] == data["timestamp"]
+                ):
+                    statement["timestamp"] = None
+            elif isinstance(statement, Statement):
+                if (
+                    statement.timestamp
+                    and "timestamp" in data
+                    and statement.timestamp == data["timestamp"]
+                ):
+                    statement = statement.update(timestamp=None)
+            statements.append(statement)
+        data["statements"] = statements
+        return data
+
     @field_serializer("timestamp")
     def serialize_timestamp(self, value: datetime) -> str:
         """Serializes timestamp parameter as a ISO 8601 string"""
         return value.isoformat()
+
+    def update(self, **kwargs: Any) -> "Document":
+        obj = self.model_dump()
+        obj.update(
+            kwargs if "timestamp" in kwargs else (kwargs | {"timestamp": utc_now()})
+        )
+        return Document(**obj)
+
+    def append_statements(self, statement: Statement) -> "Document":
+        return self.update(
+            statements=self.statements + (statement,)
+            if self.statements
+            else (statement,)
+        )
+
+    def extend_statements(self, statements: Iterable[Statement]) -> "Document":
+        return self.update(
+            statements=self.statements + tuple(statements)
+            if self.statements
+            else tuple(statements)
+        )
 
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""

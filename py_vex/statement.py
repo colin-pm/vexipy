@@ -29,7 +29,7 @@ class Statement(BaseModel):
     id: Optional[Iri] = Field(alias="@id", default=None)
     version: Optional[int] = None
     vulnerability: Vulnerability
-    timestamp: datetime = Field(default_factory=utc_now)
+    timestamp: Optional[datetime] = Field(default_factory=utc_now)
     products: Optional[Tuple[Component, ...]] = None
     status: StatusLabel
     supplier: Optional[str] = None
@@ -74,6 +74,13 @@ class Statement(BaseModel):
     @field_serializer("timestamp")
     def serialize_timestamp(self, value: datetime) -> str:
         return value.isoformat()
+
+    def update(self, **kwargs: Any) -> "Statement":
+        obj = self.model_dump()
+        obj.update(
+            (kwargs | {"timestamp": utc_now()}) if "timestamp" not in kwargs else kwargs
+        )
+        return Statement(**obj)
 
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
