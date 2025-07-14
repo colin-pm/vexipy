@@ -35,6 +35,27 @@ class Document(BaseModel):
         """Serializes timestamp parameter as a ISO 8601 string"""
         return value.isoformat()
 
+    def update(self, **kwargs: Any) -> "Document":
+        obj = self.model_dump()
+        obj.update(
+            kwargs if "timestamp" in kwargs else (kwargs | {"timestamp": utc_now()})
+        )
+        return Document(**obj)
+
+    def append_statements(self, statement: Statement) -> "Document":
+        return self.update(
+            statements=self.statements + (statement,)
+            if self.statements
+            else (statement,)
+        )
+
+    def extend_statements(self, statements: Iterable[Statement]) -> "Document":
+        return self.update(
+            statements=self.statements + tuple(statements)
+            if self.statements
+            else tuple(statements)
+        )
+
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
         return self.model_dump_json(**kwargs)

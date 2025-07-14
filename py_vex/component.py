@@ -58,8 +58,10 @@ class Subcomponent(BaseModel):
     @field_validator("identifiers", mode="after")
     @classmethod
     def identifiers_valid(
-        cls, value: MappingProxyType[str, str]
-    ) -> MappingProxyType[str, str]:
+        cls, value: Optional[MappingProxyType[str, str]]
+    ) -> Optional[MappingProxyType[str, str]]:
+        if value is None:
+            return value
         if not IDENTIFIER_KEYS.issuperset(value.keys()):
             raise ValueError(
                 f'"{", ".join(value.keys() - IDENTIFIER_KEYS)}" are not valid identifiers'
@@ -69,13 +71,20 @@ class Subcomponent(BaseModel):
     @field_validator("hashes", mode="after")
     @classmethod
     def hashes_valid(
-        cls, value: MappingProxyType[str, str]
-    ) -> MappingProxyType[str, str]:
+        cls, value: Optional[MappingProxyType[str, str]]
+    ) -> Optional[MappingProxyType[str, str]]:
+        if value is None:
+            return value
         if not HASH_KEYS.issuperset(value.keys()):
             raise ValueError(
                 f'"{", ".join(value.keys() - HASH_KEYS)}" are not valid hashes'
             )
         return value
+
+    def update(self, **kwargs: Any) -> "Component":
+        obj = self.model_dump()
+        obj.update(kwargs)
+        return Component(**obj)
 
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
@@ -104,6 +113,22 @@ class Component(Subcomponent):
     ) -> Optional[Tuple["Subcomponent", ...]]:
         """Convert dict input to tuple of tuples"""
         return None if v is None else tuple(v)
+
+    def append_subcomponents(self, subcomponent: "Subcomponent") -> "Component":
+        return self.update(
+            subcomponents=self.subcomponents + (subcomponent,)
+            if self.subcomponents
+            else (subcomponent,)
+        )
+
+    def extend_subcomponents(
+        self, subcomponents: Iterable["Subcomponent"]
+    ) -> "Component":
+        return self.update(
+            subcomponents=self.subcomponents + tuple(subcomponents)
+            if self.subcomponents
+            else subcomponents
+        )
 
     @classmethod
     def from_json(cls, json_string: str) -> "Component":

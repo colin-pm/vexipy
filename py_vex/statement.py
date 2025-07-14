@@ -75,6 +75,13 @@ class Statement(BaseModel):
     def serialize_timestamp(self, value: datetime) -> str:
         return value.isoformat()
 
+    def update(self, **kwargs: Any) -> "Statement":
+        obj = self.model_dump()
+        obj.update(
+            (kwargs | {"timestamp": utc_now()}) if "timestamp" not in kwargs else kwargs
+        )
+        return Statement(**obj)
+
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
         return self.model_dump_json(**kwargs)
