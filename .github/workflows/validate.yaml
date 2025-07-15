@@ -46,11 +46,10 @@ jobs:
 
     - name: Test with pytest
       run: |
-        uv run pytest
+        uv run pytest --cov=vexipy --cov-branch --cov-report=xml
 
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
       if: matrix.python-version == '3.11'
       with:
-        files: ./htmlcov/index.html
-        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}
