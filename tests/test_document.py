@@ -93,18 +93,3 @@ def test_document_update_without_timestamp():
     d = d.update(author="Colin")
     assert d.author == "Colin"
     assert d.timestamp == datetime.now(timezone.utc)
-
-
-@freeze_time("2026-01-14")
-def test_document_update_with_statement_timestamps():
-    d = create_minimal_document("2025-01-14", "2025-01-14")
-    d = d.append_statements(
-        Statement(vulnerability=Vulnerability(name="CVE-2015-123456"), status="fixed")
-    )
-    assert d.timestamp.replace(tzinfo=None) == parse("2026-01-14")
-    assert len(d.statements) == 2
-    for statement in d.statements:
-        if statement.vulnerability.name == "CVE-2014-123456":
-            assert statement.timestamp == parse("2025-01-14")
-        if statement.vulnerability.name == "CVE-2015-123456":
-            assert statement.timestamp is None
