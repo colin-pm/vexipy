@@ -1,6 +1,6 @@
 [project]
 name = "vexipy"
-version = "0.1.0"
+version = "0.2.0-dev"
 description = "Python OpenVEX Library"
 readme = "README.md"
 authors = [
