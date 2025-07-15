@@ -26,7 +26,6 @@ vulnerability = Vulnerability(
         "DLA-2065-1",
     ],
 )
-vulnerability.update()
 print(vulnerability.to_json())
 
 document = Document.from_json(
