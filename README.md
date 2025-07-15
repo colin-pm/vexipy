@@ -11,7 +11,7 @@ TODO - Publish on PyPI
 ## Example Usage
 
 ```python
-from py_vex import Component, Document, Statement, Vulnerability
+from vexipy import Component, Document, Statement, Vulnerability
 
 vulnerability = Vulnerability(
     id="https://nvd.nist.gov/vuln/detail/CVE-2019-17571",
