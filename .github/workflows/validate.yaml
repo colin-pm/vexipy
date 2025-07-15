@@ -30,7 +30,7 @@ jobs:
 
     - name: Check formatting with ruff format
       run: |
-        uv run ruff format --target-version py310 --check py_vex tests
+        uv run ruff format --target-version py310 --check vexipy tests
 
     - name: Lint with ruff check
       run: |
@@ -38,11 +38,11 @@ jobs:
 
     - name: Check import sorting with isort
       run: |
-        uv run isort --check-only py_vex tests
+        uv run isort --check-only vexipy tests
 
     - name: Type check with mypy
       run: |
-        uv run mypy py_vex
+        uv run mypy vexipy
 
     - name: Test with pytest
       run: |
