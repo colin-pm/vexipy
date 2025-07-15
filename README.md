@@ -6,7 +6,9 @@ A Python implementation of the [OpenVEX specification][]
 
 ## Installing
 
-TODO - Publish on PyPI
+```bash
+python3 -m pip install vexipy
+```
 
 ## Example Usage
 
