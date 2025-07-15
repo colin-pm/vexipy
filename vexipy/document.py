@@ -10,9 +10,9 @@ from pydantic import (
     model_validator,
 )
 
-from py_vex._iri import Iri
-from py_vex._util import utc_now
-from py_vex.statement import Statement
+from vexipy._iri import Iri
+from vexipy._util import utc_now
+from vexipy.statement import Statement
 
 
 class Document(BaseModel):

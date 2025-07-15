@@ -6,9 +6,9 @@ from freezegun import freeze_time
 from hypothesis import HealthCheck, given, settings
 from hypothesis_jsonschema import from_schema
 
-from py_vex import Document
-from py_vex.statement import Statement
-from py_vex.vulnerability import Vulnerability
+from vexipy import Document
+from vexipy.statement import Statement
+from vexipy.vulnerability import Vulnerability
 
 from conftest import UPSTREAM_SCHEMA_REFS
 

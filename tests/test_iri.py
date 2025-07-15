@@ -2,7 +2,7 @@ from contextlib import nullcontext
 
 import pytest
 
-from py_vex._iri import Iri, check_iri
+from vexipy._iri import Iri, check_iri
 
 TEST_IRIS = [
     ("foo", pytest.raises(ValueError, match='Invalid IRI: "foo"')),

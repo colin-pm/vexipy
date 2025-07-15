@@ -1,5 +1,5 @@
 [project]
-name = "py-vex"
+name = "vexipy"
 version = "0.1.0"
 description = "Python OpenVEX Library"
 readme = "README.md"

@@ -4,9 +4,9 @@ import pytest
 from dateutil.parser import parse
 from freezegun import freeze_time
 
-from py_vex.statement import Statement
-from py_vex.status import StatusLabel
-from py_vex.vulnerability import Vulnerability
+from vexipy.statement import Statement
+from vexipy.status import StatusLabel
+from vexipy.vulnerability import Vulnerability
 
 
 def create_minimal_statement(time_input=None) -> Statement:

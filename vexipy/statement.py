@@ -11,11 +11,11 @@ from pydantic import (
     model_validator,
 )
 
-from py_vex._iri import Iri
-from py_vex._util import utc_now
-from py_vex.component import Component
-from py_vex.status import StatusJustification, StatusLabel
-from py_vex.vulnerability import Vulnerability
+from vexipy._iri import Iri
+from vexipy._util import utc_now
+from vexipy.component import Component
+from vexipy.status import StatusJustification, StatusLabel
+from vexipy.vulnerability import Vulnerability
 
 
 class Statement(BaseModel):

@@ -1,4 +1,4 @@
-# py-vex
+# vexipy
 
 ![py-vex logo](files/logo.png)
 

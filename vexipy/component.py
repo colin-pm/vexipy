@@ -8,7 +8,7 @@ from pydantic import (
     field_validator,
 )
 
-from py_vex._iri import Iri
+from vexipy._iri import Iri
 
 IDENTIFIER_KEYS = {
     "purl",

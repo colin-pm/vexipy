@@ -1,4 +1,4 @@
-from py_vex.component import Component, Subcomponent
+from vexipy.component import Component, Subcomponent
 
 
 def test_update_subcomponent():
