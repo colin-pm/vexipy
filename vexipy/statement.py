@@ -30,6 +30,7 @@ class Statement(BaseModel):
     version: Optional[int] = None
     vulnerability: Vulnerability
     timestamp: Optional[datetime] = Field(default_factory=utc_now)
+    last_updated: Optional[datetime] = None
     products: Optional[Tuple[Component, ...]] = None
     status: StatusLabel
     supplier: Optional[str] = None

@@ -4,6 +4,8 @@
 
 ### New features 
 
+- Added last updated fields
+
 ### Bug fixes
 
 ### Breaking changes

@@ -24,6 +24,7 @@ class Document(BaseModel):
     author: str
     role: Optional[str] = None
     timestamp: datetime = Field(default_factory=utc_now)
+    last_updated: Optional[datetime] = None
     version: int
     tooling: Optional[str] = None
     statements: Tuple[Statement, ...] = Field(default=tuple())
