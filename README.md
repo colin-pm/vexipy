@@ -78,4 +78,72 @@ statement = statement.update(products=[component])
 document = document.append_statements(statement)
 ```
 
+## Contributing
+
+We welcome contributions to this project! To contribute, please follow these guidelines:
+
+## How to Contribute
+
+1. **Fork the repository** - Create a fork of this repository to your GitHub account
+2. **Create a feature branch** - Make your changes in a new branch off of `main`
+3. **Make your changes** - Implement your feature or bug fix
+4. **Submit a Pull Request** - Open a PR from your fork's branch to our `main` branch
+
+## Requirements
+
+### Code Quality Standards
+
+- **Tests must pass** - All existing tests must continue to pass
+- **Test coverage** - New code is expected to include appropriate test coverage
+- **PEP standards** - Code must follow Python Enhancement Proposal (PEP) standards
+- **Linting and formatting** - Code must pass all linting and formatting checks
+
+### Development Tools
+
+Before submitting a PR, please run the following tools locally:
+
+```bash
+# Format code
+ruff format .
+
+# Check for linting issues
+ruff check .
+
+# Sort imports
+isort .
+
+# Type checking
+mypy .
+```
+
+These tools are enforced by CI and your PR will not be merged if any checks fail.
+
+### Signed-off-by Line
+
+All commits must include a `Signed-off-by` line. This certifies that you have the right to submit the code under the project's license and agrees to the [Developer Certificate of Origin (DCO)](https://developercertificate.org/).
+
+To add a signed-off-by line to your commit, use the `-s` flag:
+
+```bash
+git commit -s -m "Your commit message"
+```
+
+This will automatically add a line like:
+```
+Signed-off-by: Your Name <your.email@example.com>
+```
+
+### Pull Request Process
+
+- Ensure your PR has a clear title and description
+- Reference any related issues in your PR description
+- Make sure all commits in your PR include the signed-off-by line
+- Verify that all tests pass and code meets quality standards
+- Run all development tools locally before submitting
+- Be prepared to address feedback and make changes if requested
+
+## Questions?
+
+If you have questions about contributing, please open an issue or reach out to the maintainers.
+
 [OpenVEX specification]: https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md
