@@ -8,7 +8,9 @@
 
 ![py-vex logo](files/logo.png)
 
-A Python implementation of the [OpenVEX specification][]
+A Python implementation of the [OpenVEX specification][].
+
+This library aims to provide a simple-to-use API for creating, validating, and modifying OpenVEX data.
 
 ## Installing
 
