@@ -1,5 +1,11 @@
 # vexipy
 
+[![Validate](https://github.com/colin-pm/vexipy/actions/workflows/validate.yaml/badge.svg)](https://github.com/colin-pm/vexipy/actions/workflows/validate.yaml)
+![Codecov (with branch)](https://img.shields.io/codecov/c/github/colin-pm/vexipy/master)
+![OSSF-Scorecard Score](https://img.shields.io/ossf-scorecard/GitHub.com/colin-pm/vexing)
+[![CodeQL](https://github.com/colin-pm/vexipy/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/colin-pm/vexipy/actions/workflows/github-code-scanning/codeql)
+
+
 ![py-vex logo](files/logo.png)
 
 A Python implementation of the [OpenVEX specification][]
