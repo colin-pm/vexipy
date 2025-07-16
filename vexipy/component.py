@@ -129,8 +129,3 @@ class Component(Subcomponent):
             if self.subcomponents
             else subcomponents
         )
-
-    @classmethod
-    def from_json(cls, json_string: str) -> "Component":
-        """Create a model instance from a JSON string."""
-        return cls.model_validate_json(json_string)
