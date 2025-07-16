@@ -13,7 +13,7 @@ from pydantic import (
 
 from vexipy._iri import Iri
 from vexipy._util import utc_now
-from vexipy.component import Component
+from vexipy.component import Product
 from vexipy.status import StatusJustification, StatusLabel
 from vexipy.vulnerability import Vulnerability
 
@@ -31,7 +31,7 @@ class Statement(BaseModel):
     vulnerability: Vulnerability
     timestamp: Optional[datetime] = Field(default_factory=utc_now)
     last_updated: Optional[datetime] = None
-    products: Optional[Tuple[Component, ...]] = None
+    products: Optional[Tuple[Product, ...]] = None
     status: StatusLabel
     supplier: Optional[str] = None
     status_notes: Optional[str] = None
@@ -45,8 +45,8 @@ class Statement(BaseModel):
     @field_validator("products", mode="before")
     @classmethod
     def convert_to_tuple(
-        cls, v: Optional[Iterable[Component]]
-    ) -> Optional[Tuple[Component, ...]]:
+        cls, v: Optional[Iterable[Product]]
+    ) -> Optional[Tuple[Product, ...]]:
         """Convert dict input to tuple of tuples"""
         return None if v is None else tuple(v)
 

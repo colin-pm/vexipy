@@ -81,10 +81,10 @@ class Subcomponent(BaseModel):
             )
         return value
 
-    def update(self, **kwargs: Any) -> "Component":
+    def update(self, **kwargs: Any) -> "Product":
         obj = self.model_dump()
         obj.update(kwargs)
-        return Component(**obj)
+        return Product(**obj)
 
     def to_json(self, **kwargs: Any) -> str:
         """Return a JSON string representation of the model."""
@@ -96,7 +96,7 @@ class Subcomponent(BaseModel):
         return cls.model_validate_json(json_string)
 
 
-class Component(Subcomponent):
+class Product(Subcomponent):
     """
     Any components possibly included in the product where the vulnerability
     originates. The subcomponents SHOULD also list software identifiers and they
@@ -114,7 +114,7 @@ class Component(Subcomponent):
         """Convert dict input to tuple of tuples"""
         return None if v is None else tuple(v)
 
-    def append_subcomponents(self, subcomponent: "Subcomponent") -> "Component":
+    def append_subcomponents(self, subcomponent: "Subcomponent") -> "Product":
         return self.update(
             subcomponents=self.subcomponents + (subcomponent,)
             if self.subcomponents
@@ -123,7 +123,7 @@ class Component(Subcomponent):
 
     def extend_subcomponents(
         self, subcomponents: Iterable["Subcomponent"]
-    ) -> "Component":
+    ) -> "Product":
         return self.update(
             subcomponents=self.subcomponents + tuple(subcomponents)
             if self.subcomponents

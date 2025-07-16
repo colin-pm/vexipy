@@ -11,6 +11,7 @@
 ### Breaking changes
 
 - Removed timestamp normalizaiton
+- Renamed Component to Product
 
 ### Security fixes
 
