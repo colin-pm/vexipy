@@ -9,6 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
+# Documentation build directories
+docs/_build/
+
 # Other ignored files/directories
 .coverage
 .hypothesis/
