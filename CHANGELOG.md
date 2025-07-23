@@ -4,11 +4,14 @@
 
 ### New features 
 
+- Added last updated fields
+
 ### Bug fixes
 
 ### Breaking changes
 
 - Removed timestamp normalizaiton
+- Renamed Component to Product
 
 ### Security fixes
 

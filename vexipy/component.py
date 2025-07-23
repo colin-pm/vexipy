@@ -1,3 +1,7 @@
+"""
+Defines models for software components and subcomponents, including identifiers and hashes.
+"""
+
 from types import MappingProxyType
 from typing import Any, Dict, Iterable, Mapping, Optional, Tuple
 
@@ -38,6 +42,10 @@ class Subcomponent(BaseModel):
     The concept is intentionally broad to allow for a wide variety of use cases
     but generally speaking, anything that can be described in a Software Bill of
     Materials (SBOM) can be thought of as a product.
+
+    :param id: Optional IRI identifying the component to make it externally referenceable.
+    :param identifiers: A map of software identifiers where the key is the type and the value the identifier. OpenVEX favors the use of purl but others are recognized.
+    :param hashes: Map of cryptographic hashes of the component. The key is the algorithm name based on the Hash Function Textual Names from IANA.
     """
 
     id: Optional[Iri] = Field(alias="@id", default=None)
@@ -51,6 +59,12 @@ class Subcomponent(BaseModel):
     def make_data_readonly(
         cls, v: Optional[Mapping[str, str]]
     ) -> Optional[MappingProxyType[str, str]]:
+        """
+        Converts a mapping to a read-only MappingProxyType.
+
+        :param v: Mapping of strings or None.
+        :return: Read-only mapping or None if not provided.
+        """
         if v is None:
             return None
         return MappingProxyType(v)
@@ -60,11 +74,19 @@ class Subcomponent(BaseModel):
     def identifiers_valid(
         cls, value: Optional[MappingProxyType[str, str]]
     ) -> Optional[MappingProxyType[str, str]]:
+        """
+        Validates that all identifier keys are valid.
+
+        :param value: Read-only mapping of identifiers.
+        :raises ValueError: If invalid identifier keys are present.
+        :return: Validated mapping or None.
+        """
         if value is None:
             return value
         if not IDENTIFIER_KEYS.issuperset(value.keys()):
             raise ValueError(
-                f'"{", ".join(value.keys() - IDENTIFIER_KEYS)}" are not valid identifiers'
+                f'"{", ".join(value.keys() - IDENTIFIER_KEYS)}" are not valid'
+                " identifiers"
             )
         return value
 
@@ -73,6 +95,13 @@ class Subcomponent(BaseModel):
     def hashes_valid(
         cls, value: Optional[MappingProxyType[str, str]]
     ) -> Optional[MappingProxyType[str, str]]:
+        """
+        Validates that all hash keys are valid.
+
+        :param value: Read-only mapping of hashes.
+        :raises ValueError: If invalid hash keys are present.
+        :return: Validated mapping or None.
+        """
         if value is None:
             return value
         if not HASH_KEYS.issuperset(value.keys()):
@@ -81,27 +110,45 @@ class Subcomponent(BaseModel):
             )
         return value
 
-    def update(self, **kwargs: Any) -> "Component":
+    def update(self, **kwargs: Any) -> "Product":
+        """
+        Returns a new Component instance with updated fields.
+
+        :param kwargs: Fields to update in the model.
+        :return: Updated Component instance.
+        """
         obj = self.model_dump()
         obj.update(kwargs)
-        return Component(**obj)
+        return Product(**obj)
 
     def to_json(self, **kwargs: Any) -> str:
-        """Return a JSON string representation of the model."""
+        """
+        Serializes the Subcomponent model to a JSON string.
+
+        :param kwargs: Additional keyword arguments for serialization.
+        :return: JSON string representation of the model.
+        """
         return self.model_dump_json(**kwargs)
 
     @classmethod
     def from_json(cls, json_string: str) -> "Subcomponent":
-        """Create a model instance from a JSON string."""
+        """
+        Creates a Subcomponent instance from a JSON string.
+
+        :param json_string: JSON string to deserialize.
+        :return: Subcomponent instance.
+        """
         return cls.model_validate_json(json_string)
 
 
-class Component(Subcomponent):
+class Product(Subcomponent):
     """
-    Any components possibly included in the product where the vulnerability
-    originates. The subcomponents SHOULD also list software identifiers and they
-    SHOULD also be listed in the product SBOM. subcomponents will most often be
-    one or more of the product's dependencies.
+    A logical unit representing a piece of software. The concept is intentionally broad to allow for a wide variety of use cases but generally speaking, anything that can be described in a Software Bill of Materials (SBOM) can be thought of as a product.
+
+    :param id: Optional IRI identifying the component to make it externally referenceable.
+    :param identifiers: A map of software identifiers where the key is the type and the value the identifier. OpenVEX favors the use of purl but others are recognized.
+    :param hashes: Map of cryptographic hashes of the component. The key is the algorithm name based on the Hash Function Textual Names from IANA.
+    :param subcomponents: Tuple of subcomponents included in the component.
     """
 
     subcomponents: Optional[Tuple["Subcomponent", ...]] = Field(default=None)
@@ -111,26 +158,42 @@ class Component(Subcomponent):
     def convert_to_tuple(
         cls, v: Optional[Iterable["Subcomponent"]]
     ) -> Optional[Tuple["Subcomponent", ...]]:
-        """Convert dict input to tuple of tuples"""
+        """
+        Converts an iterable of subcomponents to a tuple.
+
+        :param v: Iterable of Subcomponent objects or None.
+        :return: Tuple of Subcomponent objects or None if not provided.
+        """
         return None if v is None else tuple(v)
 
-    def append_subcomponents(self, subcomponent: "Subcomponent") -> "Component":
+    def append_subcomponents(self, subcomponent: "Subcomponent") -> "Product":
+        """
+        Returns a new Component with the given subcomponent appended.
+
+        :param subcomponent: Subcomponent to append.
+        :return: Updated Component instance.
+        """
         return self.update(
-            subcomponents=self.subcomponents + (subcomponent,)
-            if self.subcomponents
-            else (subcomponent,)
+            subcomponents=(
+                self.subcomponents + (subcomponent,)
+                if self.subcomponents
+                else (subcomponent,)
+            )
         )
 
     def extend_subcomponents(
         self, subcomponents: Iterable["Subcomponent"]
-    ) -> "Component":
-        return self.update(
-            subcomponents=self.subcomponents + tuple(subcomponents)
-            if self.subcomponents
-            else subcomponents
-        )
+    ) -> "Product":
+        """
+        Returns a new Component with the given collection of subcomponents extended to the subcomponents tuple.
 
-    @classmethod
-    def from_json(cls, json_string: str) -> "Component":
-        """Create a model instance from a JSON string."""
-        return cls.model_validate_json(json_string)
+        :param subcomponents: Iterable of Subcomponent objects to extend.
+        :return: Updated Component instance.
+        """
+        return self.update(
+            subcomponents=(
+                self.subcomponents + tuple(subcomponents)
+                if self.subcomponents
+                else subcomponents
+            )
+        )
