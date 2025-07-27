@@ -1,7 +1,7 @@
 # vexipy
 
 [![Validate](https://github.com/colin-pm/vexipy/actions/workflows/validate.yaml/badge.svg)](https://github.com/colin-pm/vexipy/actions/workflows/validate.yaml)
-![Codecov](https://img.shields.io/codecov/c/github/colin-pm/vexipy)
+[![codecov](https://codecov.io/gh/colin-pm/vexipy/branch/main/graph/badge.svg?token=9HQ08OLK1N)](https://codecov.io/gh/colin-pm/vexipy)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/colin-pm/vexipy/badge)](https://scorecard.dev/viewer/?uri=github.com/colin-pm/vexipy)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10913/badge)](https://www.bestpractices.dev/projects/10913)
 [![CodeQL](https://github.com/colin-pm/vexipy/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/colin-pm/vexipy/actions/workflows/github-code-scanning/codeql)
