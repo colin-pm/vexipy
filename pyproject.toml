@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Colin Pinnell McAllister", email = "colinmca242@gmail.com" }
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "pydantic>=2.11.1",
     "rfc3987>=1.3.8",
