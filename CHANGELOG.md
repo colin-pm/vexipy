@@ -1,6 +1,6 @@
 # Changelog
 
-## [v0.2.0] - TBD
+## [v0.3.0] - 2025-11-29
 
 ### New features 
 
@@ -12,6 +12,8 @@
 
 - Removed timestamp normalizaiton
 - Renamed Component to Product
+- Moved to setuptools build system
+- Moved to dynamic version using setuptools-scm
 
 ### Security fixes
 

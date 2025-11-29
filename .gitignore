@@ -15,3 +15,6 @@ docs/_build/
 # Other ignored files/directories
 .coverage
 .hypothesis/
+
+# Version file
+_version.py
