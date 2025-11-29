@@ -29,22 +29,15 @@ jobs:
 
     - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7.1.4
-      with:
-        version: "latest"
+    - name: Set up Python
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
 
-    - name: Set up Python 3.11
-      run: uv python install 3.11
-
-    - name: Install all dependencies
-      run: |
-        uv sync --all-groups
+    - name: Install doc dependencies
+      run: pip install ".[doc]"
         
     - name: Build Sphinx documentation
       run: |
-        # Activate the uv environment and build docs
-        uv run sphinx-build -b html docs/ docs/_build/html
+        sphinx-build -b html docs/ docs/_build/html
         
     - name: Setup Pages
       uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
